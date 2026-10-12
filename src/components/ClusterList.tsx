@@ -67,8 +67,14 @@ export function ClusterList({ clusters }: { clusters: Cluster[] }) {
 }
 
 function ClusterDetail({ c }: { c: Cluster }) {
+  const reduce = useReducedMotion();
   return (
-    <div className="detail">
+    <motion.div
+      className="detail"
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+    >
       <div>
         <span className={chipClass(c.status)}>{c.status}</span>
         <p className="why">{c.whyNow}</p>
@@ -119,7 +125,7 @@ function ClusterDetail({ c }: { c: Cluster }) {
           ))}
         </ul>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
