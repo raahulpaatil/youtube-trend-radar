@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>YouTube Trend Radar Components Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); color-scheme: light; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body { margin: 0; background: #ffffff; font-family: Inter, "Segoe UI", Arial, sans-serif; color: #13294B; }
+  .wrap { max-width: 1820px; margin: 0 auto; padding: 8px 12px 24px; overflow-x: auto; }
+  svg { width: 100%; min-width: 1100px; height: auto; display: block; }
+  .box { box-sizing: border-box; width: 100%; height: 100%; border: 2px solid; border-radius: 10px;
+         display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+         padding: 8px 12px; gap: 5px; }
+  .box b { font-size: 15.5px; font-weight: 600; line-height: 1.25; }
+  .box span { font-size: 13px; line-height: 1.35; }
+  .badge { font-size: 11px !important; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+           background: #E0612F; color: #fff; padding: 2px 8px; border-radius: 999px; }
+  .trig { background: #E4E2FB; border-color: #5B54D6; color: #26215C; }
+  .ai   { background: #FDE4EF; border-color: #D9468A; color: #5A1534; }
+  .ctx  { background: #E3F6E5; border-color: #3FAE56; color: #173F1F; }
+  .proc { background: #FFF1CC; border-color: #E8A317; color: #4A3300; }
+  .hum  { background: #FFE2D6; border-color: #E0612F; color: #5A2410; border-width: 2.5px; }
+  .mail { background: #E3EEFC; border-color: #2F6FD6; color: #0C2F66; }
+  .out  { background: #FDE3E1; border-color: #E2483D; color: #5E1611; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg id="map" viewBox="0 0 1820 1275" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Components map for the YouTube Trend Radar weekly brief">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#1F3A5F"/>
+    </marker>
+  </defs>
+  <g id="bg"></g>
+  <g id="arrows"></g>
+  <g id="boxes"></g>
+</svg>
+</div>
+<script>
+const NS = "http://www.w3.org/2000/svg";
+const X0 = 215, CW = 265, Y0 = 155, LH = 170, BW = 236, BH = 134;
+const cols = ["Trigger", "Input", "Context", "Processing", "AI", "Output"];
+const lanes = [
+  ["Ishaan", "(Creator)", "#E9F1FD"],
+  ["Scheduler", "(Vercel Cron)", "#EEF9F0"],
+  ["System", "(App backend)", "#FFFBEA"],
+  ["Data", "(YouTube API + Neon)", "#FFF1E8"],
+  ["AI", "(Gemini Flash)", "#FDEEF4"],
+  ["Delivery", "(Resend + brief page)", "#F1F3F8"]
+];
+const cx = c => X0 + CW * (c - 1) + CW / 2;
+const cy = l => Y0 + LH * (l - 1) + LH / 2;
+
+// [lane, column, class, badge, title, subtitle]
+const boxes = {
+  T0: [1, 1, "trig", "", "Ishaan clicks \u201cGenerate now\u201d", "Same pipeline, any day. Also gives a live brief at submission"],
+  T1: [2, 1, "trig", "", "Vercel Cron fires on Sunday morning", "01:00 UTC. On the free plan it runs between 06:30 and 07:29 IST"],
+  S1: [1, 2, "trig", "", "Ishaan sets categories, region and keywords", "Saved in Neon. Change them any time and the brief follows his channel"],
+  I2: [4, 2, "mail", "", "Fetches live YouTube data", "Trending in his region and categories, plus last-7-day uploads on his keywords, with stats"],
+  C1: [4, 3, "ctx", "", "Loads last week's snapshot", "From Neon. Also keeps the last good data as a fallback if YouTube fails, marked stale"],
+  P1: [3, 4, "proc", "", "Cleans, measures and compares", "Drops duplicates and off-topic. Computes views per hour, length, engagement, and new vs last week"],
+  A1: [5, 5, "ai", "", "Gemini Flash finds 3-5 theme clusters", "Topic, why this week, winning formats, typical length. Uses only the supplied numbers"],
+  H1: [1, 5, "hum", "Human judgment", "Which trend peaks next stays with Ishaan", "The brief shows what is rising now. It never predicts"],
+  G1: [3, 6, "proc", "", "Checks and saves the brief", "Every cluster must link real videos; numbers come from the API. Fails: one retry, then flagged"],
+  O1: [6, 6, "out", "", "Brief reaches Ishaan before Sunday noon", "Emailed via Resend and shown on a brief page. Each week's brief is kept"],
+  O2: [1, 6, "hum", "Human judgment", "Ishaan decides Monday's filming", "Reads the clusters, picks what to film and why this week"]
+};
+
+const box = id => { const [l, c] = boxes[id]; const x = cx(c) - BW / 2, y = cy(l) - BH / 2;
+  return { x, y, r: x + BW, b: y + BH, mx: cx(c), my: cy(l) }; };
+const R = (id, dy = 0) => [box(id).r, box(id).my + dy];
+const L = (id, dy = 0) => [box(id).x, box(id).my + dy];
+const T = (id, dx = 0) => [box(id).mx + dx, box(id).y];
+const B = (id, dx = 0) => [box(id).mx + dx, box(id).b];
+const viaX = (a, b, x) => [a, [x, a[1]], [x, b[1]], b];
+const vFirst = (a, b) => [a, [a[0], b[1]], b];
+
+const arrows = [
+  viaX(R("T0"), L("I2"), 480),
+  viaX(R("T1"), L("I2"), 480),
+  [B("S1"), T("I2")],
+  [R("I2"), L("C1")],
+  viaX(R("C1"), L("P1"), 1010),
+  vFirst(B("P1"), L("A1")),
+  viaX(R("A1"), L("G1"), 1540),
+  [B("G1"), T("O1")],
+  [R("O1"), [1802, R("O1")[1]], [1802, R("O2")[1]], R("O2")],
+  [R("H1"), L("O2")]
+];
+
+function el(tag, attrs, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text) e.textContent = text;
+  parent.appendChild(e); return e;
+}
+const bg = document.getElementById("bg"), ar = document.getElementById("arrows"), bx = document.getElementById("boxes");
+
+el("text", { x: 910, y: 52, "text-anchor": "middle", "font-size": 32, "font-weight": 700, fill: "#13294B" }, bg,
+   "Final Exam \u00b7 YouTube Trend Radar \u2014 Components Map");
+el("rect", { x: 20, y: 85, width: 1785, height: 70, rx: 10, fill: "#13294B" }, bg);
+el("text", { x: 117, y: 128, "text-anchor": "middle", "font-size": 21, "font-weight": 500, fill: "#fff" }, bg, "Actor");
+cols.forEach((c, i) => el("text", { x: cx(i + 1), y: 128, "text-anchor": "middle", "font-size": 21, "font-weight": 500, fill: "#fff" }, bg, c));
+lanes.forEach(([name, sub, color], i) => {
+  const y = Y0 + LH * i;
+  el("rect", { x: X0, y, width: CW * 6 - 10, height: LH, fill: color }, bg);
+  el("rect", { x: 20, y, width: 195, height: LH, fill: "#13294B" }, bg);
+  el("line", { x1: 20, y1: y, x2: 1805, y2: y, stroke: "#ffffff", "stroke-width": 2 }, bg);
+  el("text", { x: 117, y: y + LH / 2 - 4, "text-anchor": "middle", "font-size": 20, "font-weight": 600, fill: "#fff" }, bg, name);
+  el("text", { x: 117, y: y + LH / 2 + 22, "text-anchor": "middle", "font-size": 14, fill: "#C9D3E6" }, bg, sub);
+});
+for (let i = 1; i < 6; i++) el("line", { x1: X0 + CW * i, y1: Y0, x2: X0 + CW * i, y2: Y0 + LH * 6, stroke: "#ffffff", "stroke-width": 2 }, bg);
+
+arrows.forEach(pts => el("polyline", { points: pts.map(p => p.join(",")).join(" "), fill: "none", stroke: "#1F3A5F",
+  "stroke-width": 1.8, "stroke-dasharray": "6 5", "marker-end": "url(#ah)" }, ar));
+
+for (const id in boxes) {
+  const [, , cls, badge, title, sub] = boxes[id]; const g = box(id);
+  const fo = el("foreignObject", { x: g.x, y: g.y, width: BW, height: BH }, bx);
+  fo.innerHTML = `<div xmlns="http://www.w3.org/1999/xhtml" class="box ${cls}">${badge ? `<span class="badge">${badge}</span>` : ""}<b>${title}</b><span>${sub}</span></div>`;
+}
+
+const ly = Y0 + LH * 6 + 38;
+el("rect", { x: 20, y: ly - 18, width: 26, height: 22, rx: 5, fill: "#FFE2D6", stroke: "#E0612F", "stroke-width": 2.5 }, bg);
+el("text", { x: 56, y: ly, "font-size": 15, fill: "#13294B" }, bg, "Orange = human judgment point (AI does not decide)");
+el("line", { x1: 470, y1: ly - 6, x2: 520, y2: ly - 6, stroke: "#1F3A5F", "stroke-width": 1.8, "stroke-dasharray": "6 5", "marker-end": "url(#ah)" }, bg);
+el("text", { x: 532, y: ly, "font-size": 15, fill: "#13294B" }, bg, "Flow of the weekly brief");
+el("text", { x: 740, y: ly, "font-size": 15, fill: "#5A6B85" }, bg,
+   "Fallback: if the YouTube call fails, the last good snapshot is used and the brief is marked stale.");
+el("text", { x: 20, y: ly + 30, "font-size": 15, fill: "#5A6B85" }, bg,
+   "Cut (Check 03): no trend forecasting, since the API shows only what has already happened. Stack: YouTube Data API, Gemini Flash, Neon, Vercel Cron, Resend, GitHub.");
+</script>
+</body>
+</html>

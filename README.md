@@ -6,6 +6,7 @@ It shows what is **already clustering and rising now, and why this week**. It ne
 
 - **Live app:** https://youtube-trend-radar-iota.vercel.app
 - **Code:** https://github.com/raahulpaatil/youtube-trend-radar
+- **Components Map:** [`docs/components-map.html`](docs/components-map.html) (also as an image: [`docs/components-map.jpg`](docs/components-map.jpg)). It shows the flow from trigger to delivery and where the human decisions sit.
 - **Built with:** Next.js on Vercel, YouTube Data API v3, Gemini Flash (the only AI used), Neon Postgres, Resend, Vercel Cron.
 
 ## How it works, in plain English
