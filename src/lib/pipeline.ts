@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { sendBriefEmail, siteUrl } from "./email";
 import { buildClusters } from "./gemini";
 import { weekOf } from "./metrics";
@@ -101,6 +102,13 @@ export async function runPipeline(args: {
       settings,
       dataAsOf: snapshot.fetchedAt,
     });
+    try {
+      revalidatePath("/");
+      revalidatePath("/weeks");
+      revalidatePath("/weeks/[id]", "page");
+    } catch (e) {
+      note(`Could not refresh cached pages: ${(e as Error).message}`);
+    }
     emit({ step, state: stale ? "warning" : "done", message: stale ? "Saved, marked as older data" : "Brief saved" });
 
     // ---- Output: email ----

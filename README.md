@@ -21,6 +21,8 @@ It shows what is **already clustering and rising now, and why this week**. It ne
 
 Opening the brief page only reads the database. It never calls YouTube or Gemini.
 
+**Speed.** The pages are pre-built and cached, and refresh automatically when a new brief is saved or the settings change (with an hourly safety refresh). The app's server functions run in Singapore (`sin1`), next to the Neon database.
+
 ### Cluster status labels
 
 Worked out by code by comparing with the brief from an earlier week:

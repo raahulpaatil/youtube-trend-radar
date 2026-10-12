@@ -2,7 +2,9 @@ import Link from "next/link";
 import { formatIST } from "@/lib/metrics";
 import { getLatestBrief, listBriefs } from "@/lib/store";
 
-export const dynamic = "force-dynamic";
+// Pre-built and cached. Refreshed on demand when a brief or the settings change (see revalidatePath),
+// with an hourly safety refresh. Page views never call YouTube or Gemini.
+export const revalidate = 3600;
 
 export default async function EarlierWeeksPage() {
   const [latest, all] = await Promise.all([getLatestBrief(), listBriefs()]);

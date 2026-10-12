@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { REGIONS } from "@/lib/regions";
@@ -28,5 +29,6 @@ export async function POST(req: NextRequest) {
   }
   const keywords = [...new Set(parsed.data.keywords)];
   await saveSettings({ ...parsed.data, keywords });
+  revalidatePath("/settings");
   return Response.json({ ok: true });
 }

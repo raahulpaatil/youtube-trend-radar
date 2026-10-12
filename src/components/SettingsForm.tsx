@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { REGIONS } from "@/lib/regions";
 import type { Category, Settings } from "@/lib/types";
 
-export function SettingsForm({ initial }: { initial: Settings }) {
+export function SettingsForm({ initial, initialCategories }: { initial: Settings; initialCategories: Category[] | null }) {
   const [region, setRegion] = useState(initial.region);
-  const [available, setAvailable] = useState<Category[] | null>(null);
+  const [available, setAvailable] = useState<Category[] | null>(initialCategories);
+  const skipFirstFetch = useRef(initialCategories !== null);
   const [catError, setCatError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Category[]>(initial.categories);
   const [keywords, setKeywords] = useState<string[]>(initial.keywords);
@@ -15,6 +16,10 @@ export function SettingsForm({ initial }: { initial: Settings }) {
   const [status, setStatus] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
 
   useEffect(() => {
+    if (skipFirstFetch.current) {
+      skipFirstFetch.current = false;
+      return;
+    }
     let cancelled = false;
     setAvailable(null);
     setCatError(null);

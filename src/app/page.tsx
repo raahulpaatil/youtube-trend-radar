@@ -3,8 +3,9 @@ import { BriefBody, BriefHeading } from "@/components/BriefView";
 import { GenerateNow } from "@/components/GenerateNow";
 import { getLatestBrief } from "@/lib/store";
 
-// Reads Neon only. Page views never call YouTube or Gemini.
-export const dynamic = "force-dynamic";
+// Pre-built and cached. Refreshed on demand when a brief or the settings change (see revalidatePath),
+// with an hourly safety refresh. Page views never call YouTube or Gemini.
+export const revalidate = 3600;
 
 export default async function BriefPage() {
   const brief = await getLatestBrief();
