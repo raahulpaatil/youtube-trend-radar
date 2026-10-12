@@ -15,7 +15,7 @@ const STEPS: { key: StepName; label: string }[] = [
 type Phase = "idle" | "running" | "finished";
 type StepView = Partial<Record<StepName, { state: StepState; message?: string }>>;
 
-export function GenerateNow({ primary = false }: { primary?: boolean }) {
+export function GenerateNow({ className = "btn btn-solid" }: { className?: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -73,11 +73,11 @@ export function GenerateNow({ primary = false }: { primary?: boolean }) {
 
   return (
     <>
-      <button type="button" className={`btn ${primary ? "btn-primary" : ""}`} onClick={() => setOpen(true)}>
+      <button type="button" className={className} onClick={() => setOpen(true)} aria-haspopup="dialog">
         {running ? "Generating…" : "Generate now"}
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title="Generate now">
-        <p className="why">
+        <p className="why" style={{ color: "var(--muted)", fontSize: 15 }}>
           Pulls fresh data from YouTube and builds a new brief. It usually takes under a minute. Runs are limited to one
           every 10 minutes and 20 a day.
         </p>
@@ -85,12 +85,12 @@ export function GenerateNow({ primary = false }: { primary?: boolean }) {
           <input type="checkbox" checked={alsoEmail} disabled={running} onChange={(e) => setAlsoEmail(e.target.checked)} />
           Also email me
         </label>
-        <button type="button" className="btn btn-primary" onClick={start} disabled={running}>
+        <button type="button" className="btn btn-solid" onClick={start} disabled={running}>
           {running ? "Working…" : phase === "finished" ? "Run again" : "Start"}
         </button>
 
         {blocked && (
-          <div className="callout callout-err" role="alert" style={{ marginTop: "1rem", marginBottom: 0 }}>
+          <div className="callout callout-err" role="alert" style={{ marginTop: 16, marginBottom: 0 }}>
             {blocked}
           </div>
         )}
@@ -112,7 +112,7 @@ export function GenerateNow({ primary = false }: { primary?: boolean }) {
         )}
 
         {phase === "finished" && succeeded && (
-          <button type="button" className="btn" style={{ marginTop: "1rem" }} onClick={() => setOpen(false)}>
+          <button type="button" className="btn btn-ghost" style={{ marginTop: 16 }} onClick={() => setOpen(false)}>
             View the new brief
           </button>
         )}
@@ -127,36 +127,36 @@ function StepIcon({ state }: { state: StepState | "waiting" }) {
     case "running":
       return (
         <svg {...common} className="icon spin">
-          <circle cx="12" cy="12" r="8" fill="none" stroke="var(--line-strong)" strokeWidth="2.5" />
-          <path d="M12 4a8 8 0 0 1 8 8" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" />
+          <circle cx="12" cy="12" r="8" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="2.5" />
+          <path d="M12 4a8 8 0 0 1 8 8" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
       );
     case "done":
       return (
         <svg {...common}>
           <circle cx="12" cy="12" r="9" fill="var(--good)" />
-          <path d="M8 12.5l2.7 2.7L16 9.8" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M8 12.5l2.7 2.7L16 9.8" fill="none" stroke="#000" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     case "warning":
       return (
         <svg {...common}>
           <path d="M12 3.5l9.5 16.5h-19z" fill="var(--warn)" strokeLinejoin="round" stroke="var(--warn)" strokeWidth="1.5" />
-          <path d="M12 9.5v4.5" stroke="var(--warn-bg)" strokeWidth="2.2" strokeLinecap="round" />
-          <circle cx="12" cy="17" r="1.2" fill="var(--warn-bg)" />
+          <path d="M12 9.5v4.5" stroke="#000" strokeWidth="2.2" strokeLinecap="round" />
+          <circle cx="12" cy="17" r="1.2" fill="#000" />
         </svg>
       );
     case "error":
       return (
         <svg {...common}>
           <circle cx="12" cy="12" r="9" fill="var(--err)" />
-          <path d="M9 9l6 6M15 9l-6 6" stroke="var(--err-bg)" strokeWidth="2.2" strokeLinecap="round" />
+          <path d="M9 9l6 6M15 9l-6 6" stroke="#000" strokeWidth="2.2" strokeLinecap="round" />
         </svg>
       );
     default:
       return (
         <svg {...common}>
-          <circle cx="12" cy="12" r="8" fill="none" stroke="var(--line-strong)" strokeWidth="2" />
+          <circle cx="12" cy="12" r="8" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
         </svg>
       );
   }

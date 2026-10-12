@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BriefBody, BriefHeading } from "@/components/BriefView";
+import { BriefBody, briefMeta } from "@/components/BriefView";
+import { PageHead } from "@/components/PageHead";
+import { formatIST } from "@/lib/metrics";
 import { getBrief } from "@/lib/store";
 
 // Pre-built and cached. Refreshed on demand when a brief or the settings change (see revalidatePath),
@@ -20,14 +22,12 @@ export default async function PastBriefPage({ params }: { params: Promise<{ id: 
   if (!brief) notFound();
 
   return (
-    <>
+    <div className="shell">
       <Link href="/weeks" className="back">
         ← Earlier weeks
       </Link>
-      <div className="page-head">
-        <BriefHeading brief={brief} />
-      </div>
+      <PageHead title={brief.weekLabel} sub={`Data as of ${formatIST(brief.dataAsOf)}`} meta={briefMeta(brief)} />
       <BriefBody brief={brief} />
-    </>
+    </div>
   );
 }

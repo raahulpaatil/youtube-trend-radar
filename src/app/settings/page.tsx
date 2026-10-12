@@ -1,3 +1,4 @@
+import { PageHead } from "@/components/PageHead";
 import { SettingsForm } from "@/components/SettingsForm";
 import { getSettings } from "@/lib/store";
 import { listCategories } from "@/lib/youtube";
@@ -11,14 +12,12 @@ export default async function SettingsPage() {
   // YouTube's category list is cached for a day; if it is unreachable the form loads it in the browser.
   const categories = await listCategories(settings.region).catch(() => null);
   return (
-    <>
-      <div className="page-head">
-        <div>
-          <h1>Settings</h1>
-          <p className="sub">What Ishaan&rsquo;s weekly brief watches. The next brief uses whatever is saved here.</p>
-        </div>
-      </div>
+    <div className="shell">
+      <PageHead
+        title={<>Choose what to <em>watch</em></>}
+        sub="What Ishaan’s weekly brief looks at. The next brief uses whatever is saved here."
+      />
       <SettingsForm initial={settings} initialCategories={categories} />
-    </>
+    </div>
   );
 }

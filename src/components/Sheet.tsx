@@ -10,6 +10,7 @@ import {
   type PanInfo,
 } from "motion/react";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 /** Critically damped: no bounce, settles in about 0.35 s. Always starts from the live value. */
 const SPRING = { type: "spring", bounce: 0, duration: 0.35 } as const;
@@ -137,7 +138,7 @@ export function Sheet({ open, onClose, title, children }: Props) {
 
   if (!mounted) return null;
 
-  return (
+  return createPortal(
     <div className="sheet-root">
       <motion.div className="sheet-backdrop" style={{ opacity: backdrop }} onPointerDown={onClose} aria-hidden="true" />
       <motion.div
@@ -175,6 +176,7 @@ export function Sheet({ open, onClose, title, children }: Props) {
         </div>
         <div className="sheet-body">{children}</div>
       </motion.div>
-    </div>
+    </div>,
+    document.body,
   );
 }

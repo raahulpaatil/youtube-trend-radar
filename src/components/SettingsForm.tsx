@@ -128,7 +128,7 @@ export function SettingsForm({ initial, initialCategories }: { initial: Settings
               }
             }}
           />
-          <button type="button" className="btn" onClick={addKeyword} disabled={keywords.length >= 6}>
+          <button type="button" className="btn btn-ghost" onClick={addKeyword} disabled={keywords.length >= 6}>
             Add
           </button>
         </div>
@@ -147,7 +147,7 @@ export function SettingsForm({ initial, initialCategories }: { initial: Settings
       <div>
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-solid"
           onClick={save}
           disabled={saving || selected.length === 0 || keywords.length === 0 || !available}
         >

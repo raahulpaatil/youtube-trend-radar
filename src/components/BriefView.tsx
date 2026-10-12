@@ -3,17 +3,14 @@ import { REGIONS } from "@/lib/regions";
 import type { Brief } from "@/lib/types";
 import { ClusterList } from "./ClusterList";
 
-export function BriefHeading({ brief }: { brief: Brief }) {
-  const region = REGIONS.find((r) => r.code === brief.settings.region)?.name ?? brief.settings.region;
-  return (
-    <div>
-      <h1>{brief.weekLabel}</h1>
-      <p className="sub">Data as of {formatIST(brief.dataAsOf)}</p>
-      <p className="meta">
-        {region} · {brief.settings.categories.map((c) => c.title).join(", ")} · {brief.settings.keywords.join(", ")}
-      </p>
-    </div>
-  );
+export function regionName(code: string): string {
+  return REGIONS.find((r) => r.code === code)?.name ?? code;
+}
+
+/** One-line description of the settings a brief was made with. */
+export function briefMeta(brief: Brief): string {
+  const s = brief.settings;
+  return `${regionName(s.region)} · ${s.categories.map((c) => c.title).join(", ")} · ${s.keywords.join(", ")}`;
 }
 
 export function BriefBody({ brief }: { brief: Brief }) {

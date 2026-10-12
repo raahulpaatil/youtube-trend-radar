@@ -32,6 +32,10 @@ Worked out by code by comparing with the brief from an earlier week:
 - **Still going**: matched a cluster from last week without that growth.
 - **First week, no comparison**: there is no earlier week to compare with yet.
 
+## Look and feel
+
+Pure black, liquid-metal navigation pills, glass buttons, Inter with italic serif accent words, and a looping video behind the Brief page's opening screen (it only plays while visible, and is off for reduced-motion and data-saver). Motion uses the Motion library: the entrance sequence plays once per visit, then tab switches are instant. A soft gradient sits behind the hero text so it stays readable over bright video frames. The design is dark only.
+
 ## Pages
 
 | Page | What it does |

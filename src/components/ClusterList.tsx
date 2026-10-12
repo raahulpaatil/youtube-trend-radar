@@ -8,7 +8,10 @@ import { Sheet } from "./Sheet";
 
 const chipClass = (s: Status) => (s === "New this week" ? "chip chip-new" : s === "Rising now" ? "chip chip-rising" : "chip");
 
+const EASE = [0.16, 1, 0.3, 1] as const;
+
 export function ClusterList({ clusters }: { clusters: Cluster[] }) {
+  const reduce = useReducedMotion();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   // Keep the last opened cluster mounted while the sheet animates out.
   const [shown, setShown] = useState<Cluster | null>(null);
@@ -17,7 +20,15 @@ export function ClusterList({ clusters }: { clusters: Cluster[] }) {
     <>
       <ul className="cards">
         {clusters.map((c, i) => (
-          <li key={c.name}>
+          <motion.li
+            key={c.name}
+            data-motion
+            initial={reduce ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            // 40 ms between neighbours, as the motion guidelines suggest.
+            transition={{ duration: 0.6, ease: EASE, delay: (i % 2) * 0.04 }}
+          >
             <button
               type="button"
               className="card"
@@ -28,7 +39,7 @@ export function ClusterList({ clusters }: { clusters: Cluster[] }) {
               }}
             >
               <span className={chipClass(c.status)}>{c.status}</span>
-              <h2>{c.name}</h2>
+              <h3>{c.name}</h3>
               <p className="why">{c.whyNow}</p>
               <span className="numbers">
                 <span className="num">
@@ -45,7 +56,7 @@ export function ClusterList({ clusters }: { clusters: Cluster[] }) {
                 </span>
               </span>
             </button>
-          </li>
+          </motion.li>
         ))}
       </ul>
       <Sheet open={openIndex !== null} onClose={() => setOpenIndex(null)} title={shown?.name ?? ""}>
@@ -56,27 +67,19 @@ export function ClusterList({ clusters }: { clusters: Cluster[] }) {
 }
 
 function ClusterDetail({ c }: { c: Cluster }) {
-  const reduce = useReducedMotion();
   return (
-    <motion.div
-      className="detail"
-      initial={reduce ? false : { opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-    >
+    <div className="detail">
       <div>
         <span className={chipClass(c.status)}>{c.status}</span>
-        <p className="why" style={{ marginTop: "0.5rem", color: "var(--text)" }}>
-          {c.whyNow}
-        </p>
+        <p className="why">{c.whyNow}</p>
       </div>
 
-      <div className="stats">
-        <Stat label="Videos" value={String(c.stats.videos)} />
-        <Stat label="Different channels" value={String(c.stats.channels)} />
-        <Stat label="Median views per hour" value={formatCount(c.stats.medianViewsPerHour)} />
-        <Stat label="Median length" value={formatLength(c.stats.medianLengthSec)} />
-        <Stat label="Engagement (likes + comments)" value={formatPercent(c.stats.medianEngagement)} />
+      <div className="stat-grid">
+        <Tile label="Videos" value={String(c.stats.videos)} />
+        <Tile label="Different channels" value={String(c.stats.channels)} />
+        <Tile label="Median views per hour" value={formatCount(c.stats.medianViewsPerHour)} />
+        <Tile label="Median length" value={formatLength(c.stats.medianLengthSec)} />
+        <Tile label="Engagement (likes + comments)" value={formatPercent(c.stats.medianEngagement)} />
       </div>
 
       <div>
@@ -116,13 +119,13 @@ function ClusterDetail({ c }: { c: Cluster }) {
           ))}
         </ul>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Tile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="stat">
+    <div className="stat-tile">
       <div className="num">{value}</div>
       <span className="num-label">{label}</span>
     </div>

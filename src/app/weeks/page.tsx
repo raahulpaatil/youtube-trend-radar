@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageHead } from "@/components/PageHead";
 import { formatIST } from "@/lib/metrics";
 import { getLatestBrief, listBriefs } from "@/lib/store";
 
@@ -11,20 +12,17 @@ export default async function EarlierWeeksPage() {
   const earlier = all.filter((b) => b.id !== latest?.id);
 
   return (
-    <>
-      <div className="page-head">
-        <div>
-          <h1>Earlier weeks</h1>
-          <p className="sub">Past briefs, newest first.</p>
-        </div>
-      </div>
+    <div className="shell">
+      <PageHead title={<>Earlier <em>weeks</em></>} sub="Past briefs, newest first." />
       {earlier.length === 0 ? (
         <div className="empty">
           <h2>Nothing earlier yet</h2>
           <p>Past briefs appear here once a newer one replaces the current brief.</p>
-          <Link href="/" className="btn">
-            Back to this week
-          </Link>
+          <div className="empty-actions">
+            <Link href="/" className="btn btn-solid">
+              Back to this week
+            </Link>
+          </div>
         </div>
       ) : (
         <ul className="week-list">
@@ -36,14 +34,12 @@ export default async function EarlierWeeksPage() {
                   {b.clusters.length} clusters · data as of {formatIST(b.dataAsOf)}
                   {b.stale ? " · older data" : ""}
                 </p>
-                <p className="why" style={{ marginTop: "0.375rem" }}>
-                  {b.clusters.map((c) => c.name).join(" · ")}
-                </p>
+                <p className="why">{b.clusters.map((c) => c.name).join(" · ")}</p>
               </Link>
             </li>
           ))}
         </ul>
       )}
-    </>
+    </div>
   );
 }
