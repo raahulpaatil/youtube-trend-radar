@@ -4,7 +4,8 @@ A small web app for **Ishaan**, a tech YouTuber for Indian audiences. Every Sund
 
 It shows what is **already clustering and rising now, and why this week**. It never predicts what will peak next. What to film stays Ishaan's decision.
 
-- **Live app:** _added after deployment (see the bottom of this file)_
+- **Live app:** https://youtube-trend-radar-iota.vercel.app
+- **Code:** https://github.com/raahulpaatil/youtube-trend-radar
 - **Built with:** Next.js on Vercel, YouTube Data API v3, Gemini Flash (the only AI used), Neon Postgres, Resend, Vercel Cron.
 
 ## How it works, in plain English
