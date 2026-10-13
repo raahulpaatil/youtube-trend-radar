@@ -1,6 +1,6 @@
 # Saved ideas and journey improvements: design
 
-Date: 2026-10-13 · Status: **draft for review** (nothing built yet)
+Date: 2026-10-13 · Status: **approved and built** (see "As built" at the end)
 
 ## 1. Why
 
@@ -92,3 +92,11 @@ Each write calls `revalidatePath("/saved")`. Responses use `Cache-Control: no-st
 - **Shared list, no login:** anyone with the link can add, change or remove saved ideas. Accepted for a single-creator tool; limited by validation, the 200 cap, and the fact that the server copies cluster content itself.
 - **Assumption to watch:** that Ishaan actually uses Save. Cheapest signal: count of rows in `ideas` after two weeks.
 - **Swipe conflicts:** mitigated by the threshold and direction lock; if testing shows it fights scrolling it is removed and the button remains.
+
+## 11. As built (differences from the plan above)
+
+- `ideas` also stores `cluster_index`, so Undo can save the same topic again.
+- The stage control is three buttons (Saved / Filming / Published) where one tap sets the stage, which also allows moving back.
+- The email deep link is read with a timer, not `requestAnimationFrame`, because email links usually open in a background tab where frames are paused.
+- Fixed while testing: Postgres `date` values came back as a Date at local midnight, which shifted the brief's week start back a day on any server east of UTC. Dates are now read with local getters (`dateOnly` in `src/lib/store.ts`), checked in IST, UTC and Los Angeles clocks.
+- Checks run: `npm run test:time` (21 time-bucket and wording cases), the API paths with curl (validation, duplicate save, stage change, delete, cross-site block, the 200 cap), and the browser flows (save from card and panel, header count, Saved page buckets, stage change, remove and undo, "new" dot, email deep link, help panel, settings shortcut, swipe-to-save on emulated touch).

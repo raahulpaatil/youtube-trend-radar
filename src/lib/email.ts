@@ -12,12 +12,13 @@ export function siteUrl(origin?: string): string {
 }
 
 export function renderBriefEmail(brief: Brief, pageUrl: string): string {
+  const base = pageUrl.replace(/\/$/, "");
   const clusters = brief.clusters
     .map(
-      (c) => `
+      (c, i) => `
     <div style="border:1px solid #e5e5ea;border-radius:14px;padding:18px;margin:0 0 16px;">
       <div style="font-size:12px;font-weight:600;color:#0071e3;text-transform:uppercase;letter-spacing:.04em;">${esc(c.status)}</div>
-      <div style="font-size:20px;font-weight:700;letter-spacing:-0.02em;margin:4px 0 6px;">${esc(c.name)}</div>
+      <div style="font-size:20px;font-weight:700;letter-spacing:-0.02em;margin:4px 0 6px;"><a href="${esc(`${base}/?b=${brief.id}#topic-${i + 1}`)}" style="color:#1d1d1f;text-decoration:none;">${esc(c.name)}</a></div>
       <div style="font-size:15px;color:#3a3a3c;margin:0 0 12px;">${esc(c.whyNow)}</div>
       <div style="font-size:13px;color:#6e6e73;margin:0 0 12px;">
         ${c.stats.videos} videos &middot; ${c.stats.channels} channels &middot;

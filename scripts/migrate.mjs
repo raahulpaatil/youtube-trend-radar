@@ -51,6 +51,20 @@ await sql`CREATE TABLE IF NOT EXISTS briefs (
   created_at timestamptz NOT NULL DEFAULT now()
 )`;
 
+await sql`CREATE TABLE IF NOT EXISTS ideas (
+  id serial PRIMARY KEY,
+  topic_key text NOT NULL UNIQUE,
+  brief_id int NOT NULL,
+  cluster_index int NOT NULL,
+  week_start date NOT NULL,
+  cluster jsonb NOT NULL,
+  suggested_at timestamptz NOT NULL,
+  saved_at timestamptz NOT NULL DEFAULT now(),
+  stage text NOT NULL DEFAULT 'saved' CHECK (stage IN ('saved','filming','published')),
+  stage_changed_at timestamptz NOT NULL DEFAULT now()
+)`;
+await sql`CREATE INDEX IF NOT EXISTS ideas_saved_at_idx ON ideas (saved_at DESC)`;
+
 const rows = await sql`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY 1`;
 console.log("tables:", rows.map((r) => r.table_name).join(", "));
 const s = await sql`SELECT region, categories, keywords FROM settings WHERE id = 1`;

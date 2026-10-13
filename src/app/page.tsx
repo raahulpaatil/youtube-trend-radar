@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BriefBody, regionName } from "@/components/BriefView";
 import { BriefHero } from "@/components/BriefHero";
+import { HowToRead } from "@/components/HowToRead";
 import { PageHead } from "@/components/PageHead";
 import { formatIST } from "@/lib/metrics";
 import { getLatestBrief } from "@/lib/store";
@@ -46,10 +47,15 @@ export default async function BriefPage() {
       <section id="clusters" className="clusters" aria-labelledby="clusters-title">
         <div className="clusters-inner">
           <span className="section-label">Topic clusters</span>
-          <h2 id="clusters-title" className="title">
-            What to <em>watch</em> this week
-          </h2>
-          <p className="sub">Tap a card for the numbers, winning formats and the videos behind it.</p>
+          <div className="clusters-head">
+            <div>
+              <h2 id="clusters-title" className="title">
+                What to <em>watch</em> this week
+              </h2>
+              <p className="sub">Tap a card for the numbers, winning formats and the videos behind it. Tap the bookmark to save an idea.</p>
+            </div>
+            <HowToRead />
+          </div>
           <BriefBody brief={brief} />
         </div>
       </section>

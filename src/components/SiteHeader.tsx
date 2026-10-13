@@ -3,14 +3,16 @@
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { loadIdeas, useIdeas } from "@/lib/ideas-client";
 import { intro } from "@/lib/intro";
 import { AppearLink, Appear } from "./Appear";
 import { GenerateNow } from "./GenerateNow";
 
 const LINKS = [
   { href: "/", label: "Brief", kind: "scale", delay: 0.16 },
-  { href: "/weeks", label: "Earlier weeks", kind: "soft", delay: 0.28 },
-  { href: "/settings", label: "Settings", kind: "scale", delay: 0.4 },
+  { href: "/saved", label: "Saved ideas", kind: "soft", delay: 0.28 },
+  { href: "/weeks", label: "Earlier weeks", kind: "scale", delay: 0.4 },
+  { href: "/settings", label: "Settings", kind: "soft", delay: 0.52 },
 ] as const;
 
 function Logo() {
@@ -28,6 +30,12 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { ideas, status } = useIdeas();
+  const savedCount = status === "ready" ? ideas.length : 0;
+
+  useEffect(() => {
+    void loadIdeas();
+  }, []);
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
@@ -81,6 +89,7 @@ export function SiteHeader() {
               delay={l.delay}
               className="nav-link"
               aria-current={isActive(l.href) ? "page" : undefined}
+              aria-label={l.href === "/saved" && savedCount > 0 ? `Saved ideas, ${savedCount} saved` : undefined}
               onClick={() => setMenuOpen(false)}
             >
               {isActive(l.href) && (
@@ -91,6 +100,11 @@ export function SiteHeader() {
                 />
               )}
               <span className="nav-label">{l.label}</span>
+              {l.href === "/saved" && savedCount > 0 && (
+                <span className="nav-count" aria-hidden="true">
+                  {savedCount}
+                </span>
+              )}
             </AppearLink>
           ))}
         </nav>

@@ -155,6 +155,16 @@ export function SettingsForm({ initial, initialCategories }: { initial: Settings
         </button>
         <p className="status-line" role="status" style={{ marginTop: "0.75rem", color: status?.kind === "err" ? "var(--err)" : "var(--good)" }}>
           {status?.text}
+          {status?.kind === "ok" && (
+            <button
+              type="button"
+              className="btn btn-ghost"
+              style={{ marginLeft: 12 }}
+              onClick={() => window.dispatchEvent(new Event("tr:open-generate"))}
+            >
+              Make a brief with these now
+            </button>
+          )}
           {!status && (selected.length === 0 || keywords.length === 0) && (
             <span style={{ color: "var(--muted)" }}>Pick at least one category and add at least one keyword to save.</span>
           )}

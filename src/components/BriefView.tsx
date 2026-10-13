@@ -22,7 +22,7 @@ export function BriefBody({ brief }: { brief: Brief }) {
           {formatIST(brief.dataAsOf)}.
         </div>
       )}
-      <ClusterList clusters={brief.clusters} />
+      <ClusterList clusters={brief.clusters} brief={{ id: brief.id, weekStart: brief.weekStart, createdAt: brief.createdAt }} />
     </>
   );
 }

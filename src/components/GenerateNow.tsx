@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { StepEvent, StepName, StepState } from "@/lib/types";
 import { Sheet } from "./Sheet";
 
@@ -23,6 +23,13 @@ export function GenerateNow({ className = "btn btn-solid" }: { className?: strin
   const [steps, setSteps] = useState<StepView>({});
   const [blocked, setBlocked] = useState<string | null>(null);
   const [succeeded, setSucceeded] = useState(false);
+
+  // The Settings page can ask for this panel to open ("Make a brief with these now").
+  useEffect(() => {
+    const openPanel = () => setOpen(true);
+    window.addEventListener("tr:open-generate", openPanel);
+    return () => window.removeEventListener("tr:open-generate", openPanel);
+  }, []);
 
   async function start() {
     setPhase("running");

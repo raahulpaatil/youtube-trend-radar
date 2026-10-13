@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Instrument_Serif } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
+import { Toast } from "@/components/Toast";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="grain" aria-hidden="true" />
         <SiteHeader />
         <main id="main">{children}</main>
+        <Toast />
       </body>
     </html>
   );

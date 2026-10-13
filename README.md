@@ -37,12 +37,21 @@ Worked out by code by comparing with the brief from an earlier week:
 
 Pure black, liquid-metal navigation pills, glass buttons, Inter with italic serif accent words, and a looping video behind the Brief page's opening screen (it only plays while visible, and is off for reduced-motion and data-saver). Motion uses the Motion library: the entrance sequence plays once per visit, then tab switches are instant. A soft gradient sits behind the hero text so it stays readable over bright video frames. The design is dark only.
 
+## Saved ideas
+
+Tap the bookmark on any cluster (or swipe a card to the right on a phone) to keep it. The **Saved ideas** page groups what you saved into Today, Yesterday, Earlier this week, Last week and Older, and shows two labels on each: "Saved 1 day ago" (when you saved it) and "Suggested 2 days ago" (when that brief came out). Move each idea from Saved to Filming to Published as you go. Removing one shows an Undo.
+
+Because there is no login, the saved list is shared by anyone with the link, and it is capped at 200 ideas. Each saved idea is a full copy of the cluster, so it stays even after newer briefs arrive.
+
+Other small helpers: the Sunday email links each topic straight to its card, unopened cards show a small "new to you" dot, saving Settings offers "Make a brief with these now", Earlier weeks shows one row per week, and a "How to read this" button explains the numbers.
+
 ## Pages
 
 | Page | What it does |
 | --- | --- |
 | **Brief** (`/`) | Latest brief: week title, "data as of" time (IST), 3 to 5 cluster cards. Tap a card for details: stats, winning formats, suggested angle and links to the supporting videos. Has the **Generate now** button. |
-| **Earlier weeks** (`/weeks`) | Past briefs, newest first. |
+| **Saved ideas** (`/saved`) | The clusters you saved, grouped by when you saved them. |
+| **Earlier weeks** (`/weeks`) | Past briefs, one row per week, newest first. |
 | **Settings** (`/settings`) | Region, categories (the real list YouTube offers for that region) and keywords. The next brief uses them. |
 
 ## Regenerating a brief
@@ -83,6 +92,7 @@ npm install
 npm run migrate      # creates the four database tables (safe to run twice)
 npm run dev          # opens http://localhost:3000
 npm run verify       # checks the newest stored brief (see below)
+npm run test:time    # checks the "Today / 1 day ago" wording rules
 ```
 
 ## Changing how the brief is written
@@ -102,4 +112,4 @@ Edit `prompts/cluster-brief.md`. It is the whole instruction given to Gemini (ru
 
 ## Tables in Neon
 
-`settings` (one row), `runs` (every run and its log), `snapshots` (the cleaned videos from each live fetch), `briefs` (clusters, model, stale flag, week label, created time).
+`settings` (one row), `runs` (every run and its log), `snapshots` (the cleaned videos from each live fetch), `briefs` (clusters, model, stale flag, week label, created time), `ideas` (the clusters you saved, with when and at what stage).

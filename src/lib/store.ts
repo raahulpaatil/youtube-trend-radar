@@ -6,6 +6,13 @@ export const MAX_MANUAL_RUNS_PER_DAY = 20;
 
 const j = (v: unknown) => JSON.stringify(v);
 
+/** A Postgres `date` as YYYY-MM-DD. The driver returns a Date at local midnight, so read it with local getters. */
+function dateOnly(v: unknown): string {
+  if (typeof v === "string") return v.slice(0, 10);
+  const d = v as Date;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 // ---------- settings ----------
 
 export async function getSettings(): Promise<Settings> {
@@ -99,7 +106,7 @@ function toBrief(r: any): Brief {
     runId: r.run_id,
     snapshotId: r.snapshot_id,
     weekLabel: r.week_label,
-    weekStart: typeof r.week_start === "string" ? r.week_start.slice(0, 10) : new Date(r.week_start).toISOString().slice(0, 10),
+    weekStart: dateOnly(r.week_start),
     model: r.model,
     stale: r.stale,
     clusters: r.clusters,
@@ -146,4 +153,62 @@ export async function listBriefs(): Promise<Brief[]> {
 export async function getPreviousWeekBrief(weekStart: string): Promise<Brief | null> {
   const rows = await db()`SELECT * FROM briefs WHERE week_start < ${weekStart}::date ORDER BY id DESC LIMIT 1`;
   return rows.length ? toBrief(rows[0]) : null;
+}
+
+// ---------- saved ideas ----------
+
+import { MAX_IDEAS, topicKey, type Idea, type Stage } from "./types";
+
+function toIdea(r: any): Idea {
+  return {
+    id: r.id,
+    topicKey: r.topic_key,
+    briefId: r.brief_id,
+    clusterIndex: r.cluster_index,
+    weekStart: dateOnly(r.week_start),
+    cluster: r.cluster,
+    suggestedAt: new Date(r.suggested_at).toISOString(),
+    savedAt: new Date(r.saved_at).toISOString(),
+    stage: r.stage,
+    stageChangedAt: new Date(r.stage_changed_at).toISOString(),
+  };
+}
+
+export async function listIdeas(): Promise<Idea[]> {
+  const rows = await db()`SELECT * FROM ideas ORDER BY saved_at DESC, id DESC LIMIT ${MAX_IDEAS}`;
+  return rows.map(toIdea);
+}
+
+export type SaveResult =
+  | { ok: true; idea: Idea }
+  | { ok: false; reason: "no_such_cluster" | "full" };
+
+/** Copies the cluster from the stored brief itself, so the browser can never invent content. Idempotent per topic and week. */
+export async function saveIdea(briefId: number, clusterIndex: number): Promise<SaveResult> {
+  const brief = await getBrief(briefId);
+  const cluster = brief?.clusters[clusterIndex];
+  if (!brief || !cluster) return { ok: false, reason: "no_such_cluster" };
+
+  const key = topicKey(brief.weekStart, cluster.name);
+  const existing = await db()`SELECT * FROM ideas WHERE topic_key = ${key}`;
+  if (existing.length) return { ok: true, idea: toIdea(existing[0]) };
+
+  const count = await db()`SELECT count(*)::int AS n FROM ideas`;
+  if (Number(count[0].n) >= MAX_IDEAS) return { ok: false, reason: "full" };
+
+  const rows = await db()`INSERT INTO ideas (topic_key, brief_id, cluster_index, week_start, cluster, suggested_at)
+    VALUES (${key}, ${brief.id}, ${clusterIndex}, ${brief.weekStart}, ${j(cluster)}::jsonb, ${brief.createdAt})
+    ON CONFLICT (topic_key) DO UPDATE SET topic_key = EXCLUDED.topic_key
+    RETURNING *`;
+  return { ok: true, idea: toIdea(rows[0]) };
+}
+
+export async function setIdeaStage(id: number, stage: Stage): Promise<Idea | null> {
+  const rows = await db()`UPDATE ideas SET stage = ${stage}, stage_changed_at = now() WHERE id = ${id} RETURNING *`;
+  return rows.length ? toIdea(rows[0]) : null;
+}
+
+export async function deleteIdea(id: number): Promise<boolean> {
+  const rows = await db()`DELETE FROM ideas WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
 }

@@ -87,3 +87,27 @@ export type StepName = "fetching" | "analysing" | "saving" | "emailing";
 export type StepState = "running" | "done" | "warning" | "error";
 export type StepEvent = { step: StepName; state: StepState; message?: string };
 export type Emit = (e: StepEvent) => void;
+
+export const STAGES = ["saved", "filming", "published"] as const;
+export type Stage = (typeof STAGES)[number];
+
+/** A cluster Ishaan saved. `cluster` is a full copy, so it survives later briefs. */
+export type Idea = {
+  id: number;
+  topicKey: string;
+  briefId: number;
+  clusterIndex: number;
+  weekStart: string;
+  cluster: Cluster;
+  suggestedAt: string;
+  savedAt: string;
+  stage: Stage;
+  stageChangedAt: string;
+};
+
+export const MAX_IDEAS = 200;
+
+/** One topic can be saved once per week, however many times the brief is regenerated. */
+export function topicKey(weekStart: string, clusterName: string): string {
+  return `${weekStart}:${clusterName.trim().toLowerCase()}`;
+}
