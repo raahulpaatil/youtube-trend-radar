@@ -5,10 +5,14 @@ import type { Brief } from "./types";
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+/**
+ * The public address of the site. On Vercel this is always the production domain, never the address the
+ * request happened to arrive on (other deployment addresses sit behind a login wall).
+ */
 export function siteUrl(origin?: string): string {
-  if (origin) return origin;
   const prod = process.env.VERCEL_PROJECT_PRODUCTION_URL;
-  return prod ? `https://${prod}` : "http://localhost:3000";
+  if (prod) return `https://${prod}`;
+  return origin ?? "http://localhost:3000";
 }
 
 export function renderBriefEmail(brief: Brief, pageUrl: string): string {

@@ -1,4 +1,3 @@
-import { revalidatePath } from "next/cache";
 import { sendBriefEmail, siteUrl } from "./email";
 import { buildClusters } from "./gemini";
 import { weekOf } from "./metrics";
@@ -15,6 +14,20 @@ import { geminiModel } from "./gemini";
 import type { Brief, Emit, StepName } from "./types";
 import { collectVideos } from "./youtube";
 import { formatIST } from "./metrics";
+
+/** Asks the site to rebuild its cached brief pages (see /api/revalidate for why this is a request, not a direct call). */
+async function refreshCachedPages(origin: string | undefined, note: (line: string) => void) {
+  try {
+    const res = await fetch(`${siteUrl(origin)}/api/revalidate`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.CRON_SECRET ?? ""}` },
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  } catch (e) {
+    note(`Could not refresh cached pages: ${(e as Error).message}`);
+  }
+}
 
 export type PipelineResult =
   | { ok: true; brief: Brief; stale: boolean; emailed: boolean }
@@ -102,13 +115,7 @@ export async function runPipeline(args: {
       settings,
       dataAsOf: snapshot.fetchedAt,
     });
-    try {
-      revalidatePath("/");
-      revalidatePath("/weeks");
-      revalidatePath("/weeks/[id]", "page");
-    } catch (e) {
-      note(`Could not refresh cached pages: ${(e as Error).message}`);
-    }
+    await refreshCachedPages(origin, note);
     emit({ step, state: stale ? "warning" : "done", message: stale ? "Saved, marked as older data" : "Brief saved" });
 
     // ---- Output: email ----

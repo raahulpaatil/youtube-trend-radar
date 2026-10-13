@@ -119,7 +119,16 @@ export function GenerateNow({ className = "btn btn-solid" }: { className?: strin
         )}
 
         {phase === "finished" && succeeded && (
-          <button type="button" className="btn btn-ghost" style={{ marginTop: 16 }} onClick={() => setOpen(false)}>
+          <button
+            type="button"
+            className="btn btn-solid"
+            style={{ marginTop: 16 }}
+            onClick={() => {
+              setOpen(false);
+              router.push("/#clusters");
+              router.refresh();
+            }}
+          >
             View the new brief
           </button>
         )}
