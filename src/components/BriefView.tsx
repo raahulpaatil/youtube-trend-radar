@@ -22,6 +22,11 @@ export function BriefBody({ brief }: { brief: Brief }) {
           {formatIST(brief.dataAsOf)}.
         </div>
       )}
+      {brief.settings.backfilled && (
+        <div className="callout callout-warn" role="note">
+          <b>Backfilled for comparison.</b> {brief.settings.backfillNote}
+        </div>
+      )}
       <ClusterList clusters={brief.clusters} brief={{ id: brief.id, weekStart: brief.weekStart, createdAt: brief.createdAt }} />
     </>
   );

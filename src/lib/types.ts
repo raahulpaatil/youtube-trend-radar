@@ -4,6 +4,9 @@ export type Settings = {
   region: string;
   categories: Category[];
   keywords: string[];
+  /** Set only on a brief rebuilt after the fact for comparison (see the README). */
+  backfilled?: boolean;
+  backfillNote?: string;
 };
 
 export const FORMATS = [

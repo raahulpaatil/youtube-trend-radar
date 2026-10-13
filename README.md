@@ -45,6 +45,10 @@ Because there is no login, the saved list is shared by anyone with the link, and
 
 Other small helpers: the Sunday email links each topic straight to its card, unopened cards show a small "new to you" dot, saving Settings offers "Make a brief with these now", Earlier weeks shows one row per week, and a "How to read this" button explains the numbers.
 
+## The backfilled week (for comparison)
+
+The "Week of 4 Oct 2026" brief was built after the fact, so there is something to compare live weeks with. It uses **real** YouTube videos uploaded 4–10 Oct (same region and keywords), grouped by the same Gemini step and the same checks. Two honest differences: YouTube's trending chart can't be fetched for a past date, so it uses keyword searches only, and view counts are as of the day it was built, so its speeds are higher than they were at the time. It is labelled "Backfilled" on its page and in Earlier weeks, and the next live brief is compared against it.
+
 ## Pages
 
 | Page | What it does |

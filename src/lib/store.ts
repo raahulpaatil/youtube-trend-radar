@@ -135,7 +135,7 @@ export async function insertBrief(b: {
 }
 
 export async function getLatestBrief(): Promise<Brief | null> {
-  const rows = await db()`SELECT * FROM briefs ORDER BY id DESC LIMIT 1`;
+  const rows = await db()`SELECT * FROM briefs ORDER BY week_start DESC, id DESC LIMIT 1`;
   return rows.length ? toBrief(rows[0]) : null;
 }
 
@@ -145,7 +145,7 @@ export async function getBrief(id: number): Promise<Brief | null> {
 }
 
 export async function listBriefs(): Promise<Brief[]> {
-  const rows = await db()`SELECT * FROM briefs ORDER BY id DESC LIMIT 60`;
+  const rows = await db()`SELECT * FROM briefs ORDER BY week_start DESC, id DESC LIMIT 60`;
   return rows.map(toBrief);
 }
 

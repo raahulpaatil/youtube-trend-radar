@@ -39,7 +39,8 @@ export default async function EarlierWeeksPage() {
               <Link className="week-link" href={`/weeks/${b.id}`}>
                 <h2>{b.weekLabel}</h2>
                 <p className="meta">
-                  {b.clusters.length} clusters · latest run {formatIST(b.dataAsOf)}
+                  {b.clusters.length} clusters ·{" "}
+                  {b.settings.backfilled ? `backfilled ${formatIST(b.dataAsOf)}` : `latest run ${formatIST(b.dataAsOf)}`}
                   {b.stale ? " · older data" : ""}
                 </p>
                 <p className="why">{b.clusters.map((c) => c.name).join(" · ")}</p>
